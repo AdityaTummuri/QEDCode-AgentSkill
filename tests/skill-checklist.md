@@ -46,9 +46,9 @@ Run before every release, and whenever QEDCode changes its CLI or MCP interface.
 
 ## In an IDE
 
-- [ ] Antigravity: `qed connect antigravity`, then `python3 tests/run_ide_smoke.py --zoo
-      <QEDCode>/bugzoo --only 001 002` (with `agy` signed in). The hidden-tests column must pass
-- [ ] Antigravity IDE (not only `agy`): `qedcode` shows under agent panel → … → MCP Servers, and
-      the skill shows under Customizations
+- [ ] Antigravity (`agy` CLI, signed in): `python3 tests/run_ide_smoke.py --zoo <QEDCode>/bugzoo
+      --only 001 002 007 010`, then the same with `--mcp-only`. The hidden-tests column must pass
+- [ ] With a model set up (`qed setup`, local or cloud): `tests/run_solve_smoke.py`, and one
+      Antigravity run where the prompt asks the agent to let QEDCode generate the fix (`solve`)
 - [ ] VS Code: `qed connect vscode`, skill in `.github/skills/qedcode`; in Agent mode the
       `qedcode` tools are listed, and a bug report leads to `check` with grade A

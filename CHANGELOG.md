@@ -11,7 +11,8 @@ Verified against QEDCode 0.1.0, commits `50a45de` (adds `qed connect antigravity
 
 ### Tested
 - Antigravity (`agy` 1.5.13): 4 of 4 bug-zoo projects reached grade A, VERIFIED, with hidden tests
-  passing, through `tests/run_ide_smoke.py` with prompts that don't name QEDCode.
+  passing, through `tests/run_ide_smoke.py` with prompts that don't name QEDCode; 2 of 2 again
+  with `--mcp-only` (the `qed` command not allowed).
 
 ### Added
 - Google Antigravity and VS Code: skill install folders, `qed connect antigravity` / `vscode`, and

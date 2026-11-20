@@ -105,13 +105,14 @@ def smoke_one(src: Path, work: Path, out: Path, args: argparse.Namespace, qed: l
         row.note = f"setup failed: {exc}"
         return row
     prompt = f"{task} {PROOF}"
-    if args.name_qedcode:
+    if args.name_qedcode or args.mcp_only:
         prompt += " Use QEDCode (the qedcode MCP tools) for the proof."
     cmd = ["agy", "-p", prompt, "--print-timeout", f"{args.timeout}s"]
     if args.skip_permissions:
         cmd.append("--dangerously-skip-permissions")
     else:
-        cmd += ["--settings", json.dumps({"permissions": {"allow": ALLOW}})]
+        allow = [a for a in ALLOW if not (args.mcp_only and a.startswith("command(") and "qed" in a)]
+        cmd += ["--settings", json.dumps({"permissions": {"allow": allow}})]
     if args.model:
         cmd += ["--model", args.model]
     env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
@@ -178,6 +179,11 @@ def main() -> int:
     parser.add_argument("--qed", default="qed", help='command that runs QEDCode (default "qed")')
     parser.add_argument("--only", nargs="*", default=["002"], help="project name prefixes")
     parser.add_argument("--name-qedcode", action="store_true", help="name QEDCode in the prompt")
+    parser.add_argument(
+        "--mcp-only",
+        action="store_true",
+        help="the agent may not run the qed command, so any receipt came through MCP",
+    )
     parser.add_argument("--model", help="Antigravity model for the agent (see `agy models`)")
     parser.add_argument("--timeout", type=int, default=900, help="seconds per agent run")
     parser.add_argument(
@@ -219,7 +225,9 @@ def main() -> int:
             print(f"Projects kept in {work}", file=sys.stderr)
         else:
             shutil.rmtree(work, ignore_errors=True)
-    report = table(rows, versions, args.name_qedcode)
+    if args.mcp_only:
+        versions += ", MCP only (the qed command was not allowed)"
+    report = table(rows, versions, args.name_qedcode or args.mcp_only)
     (out / "report.md").write_text(report + "\n", encoding="utf-8")
     print(report)
     print(f"Transcripts and report.md in {out}", file=sys.stderr)

@@ -18,10 +18,10 @@ Tummuri. It tests every change in a throw-away git worktree, grades it **A** (pr
 (tested) / **C** (checked) / **D** (not checked) and writes a proof receipt that `qed verify`
 re-runs. This skill only teaches you to use it. It contains no copy of the engine.
 
-Verified against QEDCode **0.1.0**: the release commit `8824706`, the fix commit `005c8d2`
-(which makes `check` stricter about weakened tests and adds `notes` to MCP `check`), and
-`50a45de` (which adds `qed connect antigravity` and `vscode`), and `7edcca1` (which makes
-`qed verify` use the project's Python). All report 0.1.0. The advice
+Verified against QEDCode **0.1.0** at these commits: `8824706` (release), `005c8d2` (`check`
+is stricter about weakened tests; MCP `check` returns `notes`), `50a45de` (`qed connect
+antigravity` and `vscode`) and `7edcca1` (`qed verify` uses the project's Python). All report
+0.1.0. The advice
 below is correct on all of them. Where they differ, it says so. If
 `qed --version` reports a newer version, read `qed --help` and trust it over this file.
 

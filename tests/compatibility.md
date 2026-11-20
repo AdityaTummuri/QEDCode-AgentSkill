@@ -20,7 +20,7 @@ Minimum supported version: **0.1.0**. CI (`sync-with-qedcode`) re-runs `validate
 | --- | --- | --- | --- |
 | Claude Code | 2.1.329 (Sonnet, headless `claude -p`) | **Works** (2026-11-21; with QEDCode, and fallback without it) | Project-level skill in `.claude/skills/qedcode`. The skill was picked up from a plain bug report that didn't mention QEDCode. The agent added a regression test, reached grade A with `qed check`, ran `qed verify`, and reported honestly, including what it couldn't run. Found and fixed one gap: the agent appended to an existing test file (grade B) before moving the test to a new file |
 | Claude Code + QEDCode MCP | 2.1.329 (Sonnet) | **Works** (2026-11-21) | `qed mcp` (build `005c8d2`) connected through `--mcp-config`, with the CLI not allowed. The agent used `mcp__qedcode__check` with `project_dir` and got grade A, then ran `mcp__qedcode__verify` (verified) and its own pytest run |
-| Google Antigravity (`agy` CLI; the IDE shares its MCP file) | 1.5.13 (default model) | **Works** (2026-11-21) | 4 of 4 bug-zoo projects through `tests/run_ide_smoke.py`, with prompts that don't name QEDCode: skill picked up from the workspace, fix + regression test in a new file, grade A, `qed verify` VERIFIED, hidden tests pass. `qed connect antigravity` ran the real `agy mcp add`. Headless `agy` needs an allow-list for commands and MCP tools (the script passes one per run). Skill folders: `~/.gemini/config/skills/`, `<workspace>/.agents/skills/`. Antigravity IDE window itself not tried |
+| Google Antigravity (`agy` CLI; the IDE shares its MCP file) | 1.5.13 (default model) | **Works** (2026-11-21) | 4 of 4 bug-zoo projects through `tests/run_ide_smoke.py`, with prompts that don't name QEDCode, plus 2 of 2 with QEDCode reachable only over MCP: skill picked up from the workspace, fix + regression test in a new file, grade A, `qed verify` VERIFIED, hidden tests pass. `qed connect antigravity` ran the real `agy mcp add`. Headless `agy` needs an allow-list for commands and MCP tools (the script passes one per run). Skill folders: `~/.gemini/config/skills/`, `<workspace>/.agents/skills/`. Tested with the `agy` CLI |
 | VS Code (Copilot agent mode) | — | Not tested | No VS Code on the test machine. `qed connect vscode` (`code --add-mcp`) is unit-tested only. Skill folders from the VS Code docs: `.github/skills/`, `~/.copilot/skills/` (also `.claude/skills/`, `.agents/skills/`) |
 | Agensi | — | Not tested | Check the current ZIP and package requirements before submitting |
 | Other agents (OpenCode, Cline, Cursor) | — | Not tested | QEDCode's MCP server supports them; this skill's instructions haven't been tested there |
@@ -39,6 +39,9 @@ prompt = task.txt + "make sure the fix is actually proven" (QEDCode not named):
 | 007_sort_order | 143.4 | 1 | A | VERIFIED | pass 2/2 |
 | 010_cart_quantity | 52.7 | 1 | A | VERIFIED | pass 2/2 |
 
+- MCP only (`--mcp-only`: the `qed` command not allowed, so receipts can only come through MCP;
+  the prompt asks for the qedcode MCP tools): 002 → A, VERIFIED, hidden 3/3 (62 s); 010 → A,
+  VERIFIED, hidden 2/2 (85 s). The agent's report names the `qedcode:verify` tool.
 - First attempt: `--mode auto` isn't available on every account, and headless `agy` silently
   denies any tool needing a "command" permission. The agent fixed 002 without QEDCode, so no
   proof. The script now passes a one-run allow-list (`--settings`): QEDCode's MCP tools, `qed`,
