@@ -63,9 +63,10 @@ Not proven: tests ran on this machine without network isolation (no sealed test 
 | --- | --- | --- |
 | Wrong fix (`end = start + size + 1`) | `rejected`, `Rejected at fbpa`, failing `tests.test_regression::test_full_pages_have_the_page_size` | 1 |
 | Syntax error added | `Rejected at parse` · `src/shop/pages.py, line 16: invalid syntax` | 1 |
-| An existing test weakened (`assert True or ...`), no fix | **Grade B** · `5/5 tests pass · lint clean · protected files changed` | 0 |
+| An existing test weakened (`assert True or ...`), no fix | `8824706`: **Grade B** · `5/5 tests pass · lint clean · protected files changed`. From `005c8d2`: **Grade C** · `... · tests weakened in tests/test_pages.py` | 0 |
 | No changes at all | `Your files are identical to HEAD, so there is nothing to check.` | 2 |
-| Same correct fix, but the interpreter had no pytest (MCP, no `.venv`) | **Grade C** · `no tests ran` | 0 |
+| Same correct fix, but the interpreter had no pytest (MCP, no `.venv`) | **Grade C** · `no tests ran` (from `005c8d2`: `tests could not run: ...`, plus a note) | 0 |
 
-Rows 3 and 5 are the traps: a weakened test still earned B, and a missing test runner looked like an
-ordinary C. Read the summary line every time.
+Rows 3 and 5 are the traps on `8824706`: a weakened test still earned B, and a missing test runner
+looked like an ordinary C. Commit `005c8d2` names both in the summary. Read the summary line every
+time.

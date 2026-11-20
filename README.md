@@ -84,12 +84,13 @@ and [examples/regression-fix.md](skills/qedcode/examples/regression-fix.md).
 
 | Agent | Status |
 | --- | --- |
-| Claude Code 2.1.329 | Works: tested end to end with `qed check` / `qed verify` |
-| QEDCode MCP via Claude Code | Partially tested |
+| Claude Code 2.1.329, CLI | Works: tested end to end with `qed check` / `qed verify`, and without QEDCode installed |
+| Claude Code 2.1.329, QEDCode MCP | Works: tested end to end with `mcp__qedcode__check` / `verify` |
 | Agensi, OpenCode, Cline, Cursor | Not tested |
 
 The details and the test log are in [tests/compatibility.md](tests/compatibility.md). `qed solve`
-with a real model hasn't been tested yet.
+was run end to end with QEDCode's scripted stand-in model. How it does with a **real** model is
+measured by `tests/run_solve_smoke.py` (below), which hasn't yet been run on a machine with a model.
 
 ## Repository layout
 
@@ -101,9 +102,11 @@ skills/qedcode/          the skill package (this is what gets installed or zippe
   examples/              bug-fix (check), regression-fix (solve)
 tests/
   validate_skill.py      checks the frontmatter and links, and that every qed command/flag exists
+  run_solve_smoke.py     real-model qed solve test over QEDCode's bug zoo, with hidden tests
   compatibility.md       tested versions and agents, with a test log
   skill-checklist.md     release checklist
 scripts/package.sh       builds dist/qedcode-skill-<version>.zip
+marketplace/             Agensi listing draft (copy, tags, reviewer notes)
 .claude-plugin/          Claude Code plugin marketplace manifest
 ```
 
@@ -114,6 +117,19 @@ python3 tests/validate_skill.py                  # uses `qed` on PATH
 python3 tests/validate_skill.py --qed "uv run --project ../QEDCode qed"
 scripts/package.sh                               # validate + zip
 ```
+
+### Real-model test (needs `qed setup` done; takes minutes per project)
+
+```bash
+git clone https://github.com/AdityaTummuri/QEDCode            # for its bugzoo/ folder
+python3 tests/run_solve_smoke.py --zoo QEDCode/bugzoo --report solve-report.md
+python3 tests/run_solve_smoke.py --zoo QEDCode/bugzoo --only 001 002 --speed fast
+```
+
+The script copies each bug-zoo project into a temporary git repo and runs `qed solve` from its
+plain-language task. It checks the receipt with `qed verify`, applies the result, and runs the
+project's **hidden** tests, which QEDCode never saw. The result is a Markdown table for
+[tests/compatibility.md](tests/compatibility.md). The bug zoo itself is never modified.
 
 When QEDCode changes its interface, follow [tests/skill-checklist.md](tests/skill-checklist.md).
 

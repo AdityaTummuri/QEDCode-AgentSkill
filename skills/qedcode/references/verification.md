@@ -9,7 +9,7 @@ Do all of these before calling the work done.
 | --- | --- | --- |
 | **A** Proven | A new test failed on the old code and passes now; the full suite shows no regressions; no protected file changed | Read the diff and the new test: does the test express the user's actual requirement? |
 | **B** Tested | Tests pass, but nothing proved the exact problem, **or** protected files (existing tests or test config) changed, **or** risky code needed approval | Find out which. The summary line says (`protected files changed`, `fbpa: skipped`) |
-| **C** Checked | It parses (and lints, for Python), but **no test ran** | Check whether the project has tests. If it does, this is an environment problem (troubleshooting.md) |
+| **C** Checked | It parses (and lints, for Python), but **no test ran**, or (`check`, from `005c8d2`) a test was weakened | Read the summary. `tests could not run` / `no tests ran` with tests present is an environment problem (troubleshooting.md). `tests weakened in <file>` means a skip, removed asserts or an assert that can never fail: undo that. From `e1f95ec`, a change that alters only comments or formatting outside tests is also C: it doesn't fix anything |
 | **D** Not checked | No check could run | Treat it as an unverified suggestion |
 | none / `rejected` | Failed a stage | Not a result. Fix the code, or report that it failed |
 

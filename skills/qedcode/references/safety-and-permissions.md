@@ -22,7 +22,10 @@
   without a container, unless `qed sandbox setup` was done. The project's own test code is
   therefore as trusted or untrusted as running `pytest` yourself.
 - `qed check` does **not** reject edits to existing tests. It flags them (`protected files
-  changed`) and caps the grade at B.
+  changed`) and caps the grade at B. From commit `005c8d2`, a detected weakening (added skip,
+  removed asserts, an assert that can never fail) caps it at C with `tests weakened in <file>`.
+  Subtler weakening, such as an edited expected value, still shows only as "protected files
+  changed", so read every test diff.
 - A grade doesn't prove that the requirement was understood correctly. It proves what the tests
   check.
 

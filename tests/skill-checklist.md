@@ -18,6 +18,12 @@ Run before every release, and whenever QEDCode changes its CLI or MCP interface.
 - [ ] Re-run the audit scenarios in compatibility.md (bug-zoo 001: correct, wrong, syntax error,
       weakened test, no changes, MCP without `.venv`)
 
+## With a real model (a computer where `qed setup` is done)
+
+- [ ] `python3 tests/run_solve_smoke.py --zoo <QEDCode>/bugzoo --report solve-report.md` and paste
+      the table into compatibility.md. Watch the hidden-tests column: it's the independent check
+- [ ] Repeat with `--speed fast` and `--speed sure` if timing matters
+
 ## With a real agent (fresh session, skill installed, prompt doesn't mention QEDCode)
 
 - [ ] The agent recognises the skill as relevant to a bug report in a Python project with tests
@@ -31,4 +37,6 @@ Run before every release, and whenever QEDCode changes its CLI or MCP interface.
 - [ ] Its final report includes grade, summary, files, tests, receipt and "not proven" items, and
       hides no failures
 - [ ] With `qed` missing from PATH, it explains the dependency and continues normally
+- [ ] Over MCP only (`claude -p ... --mcp-config <file> --strict-mcp-config`, no `Bash(qed:*)`),
+      it passes `project_dir` and reaches the same result
 - [ ] Record the run in compatibility.md

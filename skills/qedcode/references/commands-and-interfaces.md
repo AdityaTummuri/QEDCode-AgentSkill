@@ -1,9 +1,10 @@
 # Commands and interfaces
 
-Verified against QEDCode 0.1.0 (commit `8824706`) by reading `src/qedcode/cli.py`,
-`src/qedcode/mcp_server.py` and `src/qedcode/engine/api.py`, and by running `check`, `verify` and
-the MCP server on a real project. Items marked *(source)* were read from the code but not run
-end to end. On any other version, `qed --help` and `qed <command> --help` win.
+Verified against QEDCode 0.1.0 (commits `8824706` and `005c8d2`) by reading `src/qedcode/cli.py`,
+`src/qedcode/mcp_server.py` and `src/qedcode/engine/api.py`, and by running `check`, `verify`,
+`apply` and the MCP server on real projects. `solve --json` was run end to end with QEDCode's
+scripted stand-in model, so its fields are real, but answer quality from a real model is not yet
+measured. On any other version, `qed --help` and `qed <command> --help` win.
 
 All commands act on the git repository containing the current directory. Run them from the
 project root.
@@ -27,7 +28,7 @@ qed check [--speed fast|normal|sure] [--base <ref>] [--json] [--allow-risky]
   | `summary` | one line, e.g. `Grade A · repro test failed before, passes now · 8/8 tests pass · lint clean · no protected files changed` |
   | `failing_tests` | test ids such as `tests.test_regression::test_full_pages_have_the_page_size` |
   | `receipt_path` | absolute path to `.qed/receipts/<task id>.json` |
-  | `task_id`, `base`, `message`, `notes` | `notes` names the Python interpreter that was used |
+  | `task_id`, `base`, `message`, `notes` | `notes` names the Python interpreter that was used, and why tests could not run |
 
 - Exit codes: **0** graded (any grade), **1** rejected or cancelled, **2** no changes, busy or error.
 - `--allow-risky` lets code that uses subprocess, network, `eval` and similar pass the risk stage.
@@ -42,9 +43,9 @@ qed solve "<task>" [--speed fast|normal|sure] [--apply] [--json] [--allow-risky]
 - Speed: `fast` = 1 try, `normal` = 3, `sure` = 6. QEDCode stops early once a try is proven. With
   no `--speed`, the saved default applies.
 - It never changes the user's files unless `--apply` is given **and** the grade is A or B.
-- `--json` prints the full result *(source)*: `status` (`done`, `no_fix`, `needs_input`,
-  `cancelled`, `error`), `task.id`, `best.grade`, `best.diff`, `best.checks`, `candidates`,
-  `receipt_path`, `explanation`, `question`, `message`.
+- `--json` prints the full result: `status` (`done`, `no_fix`, `needs_input`, `cancelled`,
+  `error`), `task.id`, `best.grade`, `best.diff`, `best.checks`, `candidates`, `receipt_path`,
+  `explanation`, `question`, `message`.
 - If no model is ready, it prints a plain-text message on **stderr** (not JSON) and exits 2.
   Observed: `The llama.cpp engine (b12549) is not installed. Run qed setup ...`.
 - Exit codes: **0** done, **1** no_fix / needs_input / cancelled, **2** error (including no model),
@@ -85,18 +86,21 @@ qed solve "<task>" [--speed fast|normal|sure] [--apply] [--json] [--allow-risky]
 | `qed connect [agent]` | edits agent MCP config | **no** |
 | `qed sandbox setup` / `off` | builds a Docker test box / turns it off | **no** |
 | `qed memory forget <#>` / `clear`, `qed uninstall` | deletes data | **no** |
+| `qed benchy status` | shows whether the optional QEDCode Benchy benchmark is installed (commit `e1f95ec` and later) | yes |
+| `qed benchy install` / `run` / `share` | installs Benchy into QEDCode's environment / runs a benchmark / shares results | **no** |
 | `qed` (no args) | opens the interactive terminal UI | not useful to an agent |
 
 ## MCP server (`qed mcp`, stdio)
 
 Register it with `qed connect` or `claude mcp add qedcode -- qed mcp`. In Claude Code the tools
 appear as `mcp__qedcode__<tool>`. All four were listed and called in testing (`solve` only up to the
-point where a model is needed).
+point where a model is needed), and a Claude Code session completed a fix using `check` and
+`verify` over MCP.
 
 | Tool | Arguments | Returns |
 | --- | --- | --- |
 | `solve` | `task`, `speed="normal"`, `apply=false`, `wait_seconds=600`, `project_dir=""` | `status` (`done`, `running`, `no_fix`, `needs_input`, `busy`, `error`), `job_id`, `grade`, `summary`, `explanation`, `diff`, `receipt_path`, `question`, `message` |
-| `check` | `speed="normal"`, `base="HEAD"`, `project_dir=""` | `status`, `job_id`, `grade`, `summary`, `failing_tests`, `receipt_path`, `message` (no `notes`) |
+| `check` | `speed="normal"`, `base="HEAD"`, `project_dir=""` | `status`, `job_id`, `grade`, `summary`, `failing_tests`, `receipt_path`, `message`, and `notes` (from `005c8d2`; absent on `8824706`) |
 | `verify` | `receipt_path` | `verified`, `mismatches`, `notes` |
 | `status` | `job_id` | `running` with `progress` lines and `seconds`, or the final result |
 

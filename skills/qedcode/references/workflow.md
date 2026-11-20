@@ -19,8 +19,10 @@ Is a model ready? (`qed doctor`: engine build + model file ok, or cloud set)
 1. `git status` and `git diff`. Know exactly what's uncommitted. `check` grades all of it.
 2. For a bug fix, **add a regression test that fails on the old code**. This is what earns grade A:
    QEDCode runs the new test on `HEAD` (it must fail) and on your change (it must pass). Put it in a
-   **new test file** (e.g. `tests/test_<bug>_regression.py`). Even appending a test to an existing
-   test file counts as changing a protected file and caps the grade at B (seen in testing).
+   **new test file** (e.g. `tests/test_<bug>_regression.py`): that earns A on every build. On
+   QEDCode `8824706`, appending a test to an existing test file counts as a protected change and
+   caps the grade at B (seen in testing). From `005c8d2` on, appending new `test_*` functions
+   without touching the old ones is fine, and only the new tests count as proof.
 3. Run `qed check --json`. Parse stdout as JSON. Progress lines go to stderr.
 4. Read `status`, `grade`, `summary`, `failing_tests`, `notes`.
    - `rejected`: the summary names the stage (`Rejected at parse`, `Rejected at fbpa`, ...) and

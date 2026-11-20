@@ -18,8 +18,10 @@ Tummuri. It tests every change in a throw-away git worktree, grades it **A** (pr
 (tested) / **C** (checked) / **D** (not checked) and writes a proof receipt that `qed verify`
 re-runs. This skill only teaches you to use it. It contains no copy of the engine.
 
-Verified against QEDCode **0.1.0** (commit `8824706`). If `qed --version` reports something else,
-read `qed --help` and trust it over this file.
+Verified against QEDCode **0.1.0**: the release commit `8824706` and the fix commit `005c8d2`
+(which makes `check` stricter about weakened tests and adds `notes` to MCP `check`; both builds
+report 0.1.0). The advice below is correct on both. Where they differ, it says so. If
+`qed --version` reports a newer version, read `qed --help` and trust it over this file.
 
 ## Two jobs, two requirements
 
@@ -42,8 +44,9 @@ you just wrote before you tell the user it is done.
    `qedcode` (in Claude Code, `mcp__qedcode__solve` and the like). If neither is present, say so,
    point to [references/installation.md](references/installation.md), and carry on with your
    normal workflow. Still add a regression test and run the suite with the project's own
-   interpreter (`.venv/bin/python -m pytest` when a `.venv` exists). **Never** run an install, `qed setup`, `qed models download`, `qed connect` or
-   `qed sandbox setup` without the user's explicit OK: they download gigabytes or edit agent config.
+   interpreter (`.venv/bin/python -m pytest` when a `.venv` exists). **Never** run an install,
+   `qed setup`, `qed models download`, `qed connect` or `qed sandbox setup` without the user's
+   explicit OK: they download gigabytes or edit agent config.
 3. **Inspect the project.** Run `git status`. `qed check` grades **all** uncommitted work against
    `HEAD`, including untracked files and changes the user made before you started. Say so if the
    user has unrelated work in progress.
@@ -66,18 +69,22 @@ you just wrote before you tell the user it is done.
 
 ## Red flags (seen in real runs)
 
-- **Grade C · "no tests ran"** in a project that has tests: QEDCode could not find pytest, so this is
-  an environment problem, not a code problem. It uses the project's `.venv/` or `venv/`, then
-  `VIRTUAL_ENV`, then `python3` on PATH. The CLI's `notes` field names the interpreter it used;
-  the MCP `check` result omits `notes`, so re-run `qed check --json` from the CLI to see it. Fix the
-  environment (with the user's OK) rather than reporting C as a result.
-- **"protected files changed"** in a `qed check` summary: existing tests or test configuration were
-  edited. `check` caps this at grade B instead of rejecting it. Treat it as possible test
-  weakening and inspect those files.
+- **Grade C · "tests could not run: ..."** (on `8824706`: "no tests ran") in a project that has
+  tests: the test runner couldn't start, usually because the chosen Python has no pytest. That's an
+  environment problem, not a code problem. QEDCode uses the project's `.venv/` or `venv/`, then
+  `VIRTUAL_ENV`, then `python3` on PATH. The MCP server doesn't inherit your shell's virtualenv.
+  `notes` names the interpreter and the reason. MCP `check` returns `notes` only from `005c8d2` on;
+  before that, re-run `qed check --json` from the CLI to see them. Fix the environment (with the
+  user's OK) rather than reporting C as a result.
+- **"tests weakened in ..."** (grade C), or **"protected files changed"** (grade B), in a `qed
+  check` summary: existing tests or test configuration were edited. `check` reports this instead
+  of rejecting it. Inspect those files. On `8824706` a weakened test still shows only "protected
+  files changed" at grade B, so read the test diff yourself.
 - **Exit code 0 is not success.** `qed check` exits 0 for any graded result, C and D included.
   Read `status` and `grade`, not just the exit code.
 - **`fbpa: skipped (no new test)`**: nothing proved the bug was fixed. For grade A, add a test that
-  fails on the old code, in a **new** test file. Appending to an existing test file counts as a
+  fails on the old code. A **new** test file works on every build. Appending new test functions to
+  an existing Python test file also earns A from `005c8d2` on, but on `8824706` it counts as a
   protected change and caps the grade at B.
 - **`status: "busy"`**: another QEDCode job holds this project. Wait; don't delete `.qed/lock`.
 

@@ -1,8 +1,9 @@
 # Example: let QEDCode generate the fix with `solve` (model required)
 
-The argument names, statuses and fields come from QEDCode 0.1.0's source (`mcp_server.py`, `cli.py`).
-This skill's tests didn't run a full solve, because that needs a downloaded model. The progress
-lines follow the README's recorded session.
+The argument names, statuses and fields come from QEDCode 0.1.0. The solve → verify → apply flow was
+run end to end on this bug-zoo project with QEDCode's scripted stand-in model
+(`tests/run_solve_smoke.py`). How a real model does on it is not yet measured. The progress lines
+follow the README's recorded session.
 
 **User:** "Customers who spend exactly 100 aren't getting their 10% discount. Can QEDCode fix it?"
 (This is QEDCode's bug-zoo project `002_discount_threshold`, so you can reproduce it.)
