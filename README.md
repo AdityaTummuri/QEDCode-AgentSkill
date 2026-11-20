@@ -32,8 +32,9 @@ With the skill installed, an agent will:
 3. Grade its own fix with `qed check`, which needs no model, or, when a model is configured, let
    `qed solve` generate one.
 4. Read the diff, run the tests, and watch for traps found in testing:
-   - a weakened test still gets grade B;
-   - a missing pytest shows up as grade C "no tests ran";
+   - a weakened test is grade C ("tests weakened in ...") on current QEDCode, but only B on the
+     0.1.0 release commit, so the agent reads the test diff itself;
+   - a missing pytest shows up as grade C "tests could not run" (older builds: "no tests ran");
    - exit code 0 doesn't mean success.
 5. Apply results only with your consent, and report the grade, files, tests, receipt and what is
    still unproven.
@@ -56,7 +57,8 @@ With the skill installed, an agent will:
 /plugin install qedcode --marketplace AdityaTummuri/QEDCode-AgentSkill
 ```
 
-**Or as a plain skill:** copy or symlink the `skills/qedcode` folder into your skills directory:
+**Or as a plain skill:** copy or symlink the `skills/qedcode` folder into the folder your agent
+reads skills from:
 
 ```bash
 git clone https://github.com/AdityaTummuri/QEDCode-AgentSkill
@@ -64,8 +66,39 @@ ln -s "$PWD/QEDCode-AgentSkill/skills/qedcode" ~/.claude/skills/qedcode         
 # or: ln -s ... <project>/.claude/skills/qedcode                                   # one project
 ```
 
-**Optional:** connect QEDCode's MCP server too (`qed connect`, or
-`claude mcp add qedcode -- qed mcp`). The skill works with either the CLI or MCP.
+| Agent | All projects | One project |
+| --- | --- | --- |
+| Claude Code | `~/.claude/skills/qedcode` | `<project>/.claude/skills/qedcode` |
+| Google Antigravity (IDE and `agy`) | `~/.gemini/config/skills/qedcode` | `<project>/.agents/skills/qedcode` |
+| VS Code (Copilot agent mode) | `~/.copilot/skills/qedcode` | `<project>/.github/skills/qedcode` |
+
+VS Code also reads `.claude/skills` and `.agents/skills`, so one copy can serve several agents.
+On Windows, copy the folder instead of linking it. The folder must stay named `qedcode`, the same
+as the skill's `name` (VS Code silently skips a skill whose folder name differs).
+
+**Connect QEDCode's MCP server too** (the skill works with the CLI or MCP, and inside an IDE MCP is
+the usual route):
+
+```bash
+qed connect antigravity        # Antigravity IDE + agy (QEDCode commit 50a45de or later)
+qed connect vscode             # VS Code, through `code --add-mcp` (same commit or later)
+qed connect                    # every agent found: Claude Code, OpenCode, Cline, Cursor, ...
+claude mcp add qedcode -- qed mcp   # Claude Code by hand
+```
+
+### Using it from Antigravity or VS Code with a cloud model
+
+No GPU is needed. The IDE's agent runs on the IDE's own cloud model, `qed check` and `qed verify`
+need no model, and `qed solve` can use a cloud model:
+
+1. `uv tool install git+https://github.com/AdityaTummuri/QEDCode`
+2. `qed setup`: choose **cloud**, pick a provider and model, and paste the API key. It goes into
+   the system keychain. Don't put it in an MCP `env` block: an IDE started from the Dock or Start
+   menu doesn't see your shell's environment variables, and keys don't belong in config files.
+3. `qed connect antigravity` or `qed connect vscode`, then install the skill (table above).
+4. Restart the IDE's agent. In Antigravity: agent panel → **…** → MCP Servers, check that
+   `qedcode` is listed. In VS Code: open the chat in Agent mode and look in the tools list.
+5. Ask: *"Customers who spend exactly 100 aren't getting their discount. Fix it and prove it."*
 
 ## Usage
 
@@ -86,6 +119,8 @@ and [examples/regression-fix.md](skills/qedcode/examples/regression-fix.md).
 | --- | --- |
 | Claude Code 2.1.329, CLI | Works: tested end to end with `qed check` / `qed verify`, and without QEDCode installed |
 | Claude Code 2.1.329, QEDCode MCP | Works: tested end to end with `mcp__qedcode__check` / `verify` |
+| Antigravity (`agy` 1.5.10) | MCP registration tested for real (`qed connect antigravity`, `agy mcp list`); the agent run with `tests/run_ide_smoke.py` is still to do |
+| VS Code | Not tested (no VS Code on the test machine); install paths taken from the VS Code docs |
 | Agensi, OpenCode, Cline, Cursor | Not tested |
 
 The details and the test log are in [tests/compatibility.md](tests/compatibility.md). `qed solve`
@@ -102,12 +137,18 @@ skills/qedcode/          the skill package (this is what gets installed or zippe
   examples/              bug-fix (check), regression-fix (solve)
 tests/
   validate_skill.py      checks the frontmatter and links, and that every qed command/flag exists
+  check_contract.py      runs real qed check / verify: the grades, exit codes and JSON fields
+                         the skill documents still hold (no model)
   run_solve_smoke.py     real-model qed solve test over QEDCode's bug zoo, with hidden tests
+  run_ide_smoke.py       agent test inside Antigravity (agy): skill + MCP per workspace, then
+                         qed verify and the hidden tests on what the agent did
   compatibility.md       tested versions and agents, with a test log
   skill-checklist.md     release checklist
 scripts/package.sh       builds dist/qedcode-skill-<version>.zip
 marketplace/             Agensi listing draft (copy, tags, reviewer notes)
 .claude-plugin/          Claude Code plugin marketplace manifest
+.github/workflows/       sync-with-qedcode: validate + contract test against QEDCode main,
+                         on every push and once a week
 ```
 
 ## Develop
@@ -115,8 +156,20 @@ marketplace/             Agensi listing draft (copy, tags, reviewer notes)
 ```bash
 python3 tests/validate_skill.py                  # uses `qed` on PATH
 python3 tests/validate_skill.py --qed "uv run --project ../QEDCode qed"
+python3 tests/check_contract.py --zoo ../QEDCode/bugzoo   # real qed check/verify, no model
 scripts/package.sh                               # validate + zip
 ```
+
+### Antigravity agent test (needs `agy`, signed in: run `agy` once by itself)
+
+```bash
+python3 tests/run_ide_smoke.py --zoo ../QEDCode/bugzoo --only 002
+python3 tests/run_ide_smoke.py --zoo ../QEDCode/bugzoo --only 001 002 --name-qedcode
+```
+
+The script puts the skill and the `qedcode` MCP server in each test workspace's `.agents/`
+folder (your global Antigravity settings are untouched). It runs `agy -p` with the bug report,
+then re-runs any receipt with `qed verify` and runs the hidden tests on what the agent did.
 
 ### Real-model test (needs `qed setup` done; takes minutes per project)
 
@@ -137,7 +190,8 @@ When QEDCode changes its interface, follow [tests/skill-checklist.md](tests/skil
 
 - [QEDCode](https://github.com/AdityaTummuri/QEDCode): the engine.
   [Issues](https://github.com/AdityaTummuri/QEDCode/issues).
-- QEDCode Benchy: a separate project that benchmarks baseline agents against QEDCode.
+- [QEDCode Benchy](https://github.com/AdityaTummuri/QEDCode-benchy): a separate project that
+  benchmarks the same model with and without QEDCode (`qed benchy`).
 - Problems with this skill: [issues](https://github.com/AdityaTummuri/QEDCode-AgentSkill/issues).
 
 ## License

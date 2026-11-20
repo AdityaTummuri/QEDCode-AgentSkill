@@ -18,9 +18,10 @@ Tummuri. It tests every change in a throw-away git worktree, grades it **A** (pr
 (tested) / **C** (checked) / **D** (not checked) and writes a proof receipt that `qed verify`
 re-runs. This skill only teaches you to use it. It contains no copy of the engine.
 
-Verified against QEDCode **0.1.0**: the release commit `8824706` and the fix commit `005c8d2`
-(which makes `check` stricter about weakened tests and adds `notes` to MCP `check`; both builds
-report 0.1.0). The advice below is correct on both. Where they differ, it says so. If
+Verified against QEDCode **0.1.0**: the release commit `8824706`, the fix commit `005c8d2`
+(which makes `check` stricter about weakened tests and adds `notes` to MCP `check`), and
+`50a45de` (which adds `qed connect antigravity` and `vscode`). All report 0.1.0. The advice
+below is correct on all of them. Where they differ, it says so. If
 `qed --version` reports a newer version, read `qed --help` and trust it over this file.
 
 ## Two jobs, two requirements
@@ -40,8 +41,11 @@ you just wrote before you tell the user it is done.
 1. **Is it a fit?** A git repository with at least one commit, Python (pytest) or JS/TS
    (`node --test`, Vitest, Jest), and preferably tests. Without tests the best possible grade is C.
    Not a fit: docs-only edits, large refactors, exploratory work, other languages.
-2. **Is it available?** Run `command -v qed && qed --version`, and check for MCP tools named
-   `qedcode` (in Claude Code, `mcp__qedcode__solve` and the like). If neither is present, say so,
+2. **Is it available?** Run `command -v qed && qed --version`, and check for tools from an MCP
+   server named `qedcode`: `solve`, `check`, `verify`, `status` (in Claude Code they're
+   `mcp__qedcode__solve` and so on; Antigravity and VS Code list them under the `qedcode`
+   server). Inside an IDE the MCP tools are often there even when `qed` isn't on the terminal's
+   PATH, so use them. If neither is present, say so,
    point to [references/installation.md](references/installation.md), and carry on with your
    normal workflow. Still add a regression test and run the suite with the project's own
    interpreter (`.venv/bin/python -m pytest` when a `.venv` exists). **Never** run an install,

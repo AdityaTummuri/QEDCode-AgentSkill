@@ -7,6 +7,9 @@ Run before every release, and whenever QEDCode changes its CLI or MCP interface.
 - [ ] `python3 tests/validate_skill.py --qed "qed"` passes. It checks the frontmatter, the
       SKILL.md length and every link, and that every `qed <command>` / `--flag` in the package
       exists in the installed QEDCode
+- [ ] `python3 tests/check_contract.py --zoo <QEDCode>/bugzoo` passes (real `qed check` and
+      `qed verify`: grades, exit codes and JSON fields as documented)
+- [ ] The `sync-with-qedcode` workflow is green on `main` (it also runs weekly against QEDCode main)
 - [ ] `scripts/package.sh` builds `dist/qedcode-skill-<version>.zip`, and the ZIP contains only
       `qedcode/SKILL.md`, `qedcode/references/*` and `qedcode/examples/*`
 
@@ -40,3 +43,12 @@ Run before every release, and whenever QEDCode changes its CLI or MCP interface.
 - [ ] Over MCP only (`claude -p ... --mcp-config <file> --strict-mcp-config`, no `Bash(qed:*)`),
       it passes `project_dir` and reaches the same result
 - [ ] Record the run in compatibility.md
+
+## In an IDE
+
+- [ ] Antigravity: `qed connect antigravity`, then `python3 tests/run_ide_smoke.py --zoo
+      <QEDCode>/bugzoo --only 001 002` (with `agy` signed in). The hidden-tests column must pass
+- [ ] Antigravity IDE (not only `agy`): `qedcode` shows under agent panel → … → MCP Servers, and
+      the skill shows under Customizations
+- [ ] VS Code: `qed connect vscode`, skill in `.github/skills/qedcode`; in Agent mode the
+      `qedcode` tools are listed, and a bug report leads to `check` with grade A

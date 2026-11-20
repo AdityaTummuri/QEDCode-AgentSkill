@@ -92,8 +92,9 @@ qed solve "<task>" [--speed fast|normal|sure] [--apply] [--json] [--allow-risky]
 
 ## MCP server (`qed mcp`, stdio)
 
-Register it with `qed connect` or `claude mcp add qedcode -- qed mcp`. In Claude Code the tools
-appear as `mcp__qedcode__<tool>`. All four were listed and called in testing (`solve` only up to the
+Register it with `qed connect` (agents: `claude`, `opencode`, `cline`, `cursor`, and on newer
+builds `antigravity` and `vscode`) or `claude mcp add qedcode -- qed mcp`. In Claude Code the tools
+appear as `mcp__qedcode__<tool>`. Antigravity and VS Code list them under the `qedcode` server. All four were listed and called in testing (`solve` only up to the
 point where a model is needed), and a Claude Code session completed a fix using `check` and
 `verify` over MCP.
 

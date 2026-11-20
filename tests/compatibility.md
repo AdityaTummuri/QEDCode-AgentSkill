@@ -8,8 +8,10 @@ Only environments that were actually tested are listed as working.
 | --- | --- | --- | --- |
 | 0.1.0 | `8824706` (release) | Verified (partial) | `check`, `verify`, exit codes, `--json` output and all four MCP tools were run. `solve` was run up to the "no model installed" error |
 | 0.1.0 | `005c8d2` (fixes) | Verified (partial) | Stricter `check` (appended tests, weakened tests, "tests could not run" summary) and `notes` in MCP `check`; 1,210 engine tests pass. It sits on top of `e1f95ec` (which adds `qed benchy` and grades comment-only changes C). Live CLI run: appended test → A + VERIFIED, weakened test → C "tests weakened in tests/test_pages.py". `solve → verify → apply` was run end to end with the scripted stand-in model. A **real-model** solve is not yet tested: run `tests/run_solve_smoke.py` on a computer with `qed setup` done |
+| 0.1.0 | `50a45de` (IDE connect) | Verified (partial) | Adds `qed connect antigravity` and `qed connect vscode`; no change to `check`, `solve`, `verify` or the MCP tools. `validate_skill.py` and `check_contract.py` pass (correct fix → A + VERIFIED, wrong fix → rejected, no changes → exit 2, weakened test → C) |
 
-Minimum supported version: **0.1.0**.
+Minimum supported version: **0.1.0**. CI (`sync-with-qedcode`) re-runs `validate_skill.py` and
+`check_contract.py` against QEDCode's main branch on every push and every Monday.
 
 ## Agents
 
@@ -17,10 +19,23 @@ Minimum supported version: **0.1.0**.
 | --- | --- | --- | --- |
 | Claude Code | 2.1.329 (Sonnet, headless `claude -p`) | **Works** (2026-11-21; with QEDCode, and fallback without it) | Project-level skill in `.claude/skills/qedcode`. The skill was picked up from a plain bug report that didn't mention QEDCode. The agent added a regression test, reached grade A with `qed check`, ran `qed verify`, and reported honestly, including what it couldn't run. Found and fixed one gap: the agent appended to an existing test file (grade B) before moving the test to a new file |
 | Claude Code + QEDCode MCP | 2.1.329 (Sonnet) | **Works** (2026-11-21) | `qed mcp` (build `005c8d2`) connected through `--mcp-config`, with the CLI not allowed. The agent used `mcp__qedcode__check` with `project_dir` and got grade A, then ran `mcp__qedcode__verify` (verified) and its own pytest run |
+| Google Antigravity (`agy` CLI; IDE shares its MCP file) | 1.5.10 | **Partly tested** (2026-11-21) | `qed connect antigravity` ran the real `agy mcp add` in a throw-away HOME, and `agy mcp list` showed `qedcode` enabled; a second run said "already connected". `tests/run_ide_smoke.py` was checked with a stand-in `agy` (receipt found, A, VERIFIED, hidden tests pass). The real agent run was **not** done: `agy` on the test machine wasn't signed in. Skill folders from the Antigravity docs: `~/.gemini/config/skills/`, `<workspace>/.agents/skills/` |
+| VS Code (Copilot agent mode) | — | Not tested | No VS Code on the test machine. `qed connect vscode` (`code --add-mcp`) is unit-tested only. Skill folders from the VS Code docs: `.github/skills/`, `~/.copilot/skills/` (also `.claude/skills/`, `.agents/skills/`) |
 | Agensi | — | Not tested | Check the current ZIP and package requirements before submitting |
 | Other agents (OpenCode, Cline, Cursor) | — | Not tested | QEDCode's MCP server supports them; this skill's instructions haven't been tested there |
 
 ## Test log
+
+### 2026-11-21 — Antigravity integration (`agy` 1.5.10), QEDCode `50a45de`
+
+- `HOME=<tmp> qed connect antigravity --yes`: the preview named `agy mcp add qedcode -- <abs qed>
+  mcp`; `~/.gemini/config/mcp_config.json` got the entry; `agy mcp list` → `qedcode stdio enabled`.
+  The user's real Antigravity settings were not touched.
+- `tests/run_ide_smoke.py --only 002` with a stand-in `agy` that applies the zoo fix and runs
+  `qed check`: the workspace `.agents/` folder stayed out of the graded diff; grade A, VERIFIED,
+  hidden tests 3/3. This proves the harness, not the agent.
+- Real `agy -p` stopped at "Waiting for authentication": run `agy` once by itself to sign in, then
+  `python3 tests/run_ide_smoke.py --zoo ../QEDCode/bugzoo --only 002` and log the table here.
 
 ### 2026-11-21 — Claude Code + QEDCode MCP, bug-zoo `010_cart_quantity`
 

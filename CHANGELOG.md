@@ -4,6 +4,27 @@ All notable changes to the QEDCode Agent Skill. The format follows
 [Keep a Changelog](https://keepachangelog.com/). Each entry names the QEDCode version it was
 verified against.
 
+## [0.3.0] - 2026-11-21
+
+Verified against QEDCode 0.1.0, commit `50a45de` (adds `qed connect antigravity` and
+`qed connect vscode`; `check`, `solve`, `verify` and the MCP tools are unchanged since `005c8d2`).
+
+### Added
+- Google Antigravity and VS Code: skill install folders, `qed connect antigravity` / `vscode`, and
+  a cloud-model setup for IDE users without a GPU (README, installation, troubleshooting).
+- `tests/check_contract.py`: runs the real `qed check` and `qed verify` on a bug zoo project and
+  fails if a grade, exit code or JSON field the skill documents has changed. No model needed.
+- `tests/run_ide_smoke.py`: an agent test inside Antigravity (`agy -p`), with the skill and MCP
+  server set up per workspace, then `qed verify` and the hidden tests on the agent's result.
+- CI workflow `sync-with-qedcode`: validation, contract test and packaging against QEDCode's
+  main branch on every push, pull request and every Monday.
+
+### Changed
+- SKILL.md finds QEDCode's MCP tools by server name, not only by Claude Code's `mcp__qedcode__`
+  prefix, and prefers them inside an IDE where `qed` may not be on the PATH.
+- README: weakened tests are grade C on current QEDCode (B only on the release commit), and a
+  missing pytest reads "tests could not run".
+
 ## [0.2.0] - 2026-11-21
 
 Verified against QEDCode 0.1.0, commits `8824706` (release) and `005c8d2` (engine fixes).

@@ -41,10 +41,26 @@ qed doctor           # read-only health check with a fix for each problem
 
 ```bash
 qed connect                              # shows what it will change and asks first
+qed connect antigravity                  # Google Antigravity (IDE and agy CLI)
+qed connect vscode                       # VS Code (Copilot agent mode)
 claude mcp add qedcode -- qed mcp        # Claude Code, by hand
 ```
 
-Restart the agent session afterwards so it loads the `qedcode` tools.
+Restart the agent session afterwards so it loads the `qedcode` tools. `qed connect antigravity`
+and `qed connect vscode` need a QEDCode build from November 2026 or later; on an older build
+`qed connect --list` doesn't show them, and the user can add the server by hand: in Antigravity,
+`{"mcpServers": {"qedcode": {"command": "qed", "args": ["mcp"]}}}` in
+`~/.gemini/config/mcp_config.json`; in VS Code,
+`{"servers": {"qedcode": {"type": "stdio", "command": "qed", "args": ["mcp"]}}}` in
+`.vscode/mcp.json`. Use the absolute path of `qed` (`command -v qed`): an IDE started from the
+Dock or Start menu doesn't see the shell's PATH.
+
+## Optional: a cloud model, for IDE users without a GPU
+
+In `qed setup`, choose **cloud** and paste the provider's API key. QEDCode keeps it in the system
+keychain. Never suggest putting a key in an MCP config's `env` block. Only `qed solve` uses the
+model; `qed check` and `qed verify` work without one. Cloud mode sends the task's code to that
+provider, so the user must choose it themselves.
 
 ## Make sure the project's tests can run
 
