@@ -1,0 +1,23 @@
+{
+  "name": "qedcode-skill",
+  "description": "Agent skill for QEDCode: grade code changes with deterministic checks and proof receipts, and generate verified fixes.",
+  "owner": {
+    "name": "Aditya Tummuri"
+  },
+  "plugins": [
+    {
+      "name": "qedcode",
+      "description": "Teaches coding agents to use QEDCode (the qed CLI and MCP server): grade changes A to D with qed check, generate verified fixes with qed solve, re-run proof receipts with qed verify, and report results honestly.",
+      "version": "0.1.0",
+      "source": "./",
+      "skills": ["./skills/qedcode"],
+      "author": {
+        "name": "Aditya Tummuri"
+      },
+      "homepage": "https://github.com/AdityaTummuri/QEDCode",
+      "repository": "https://github.com/AdityaTummuri/QEDCode-AgentSkill",
+      "license": "Apache-2.0",
+      "keywords": ["skills", "qedcode", "testing", "verification", "bug-fix", "mcp"]
+    }
+  ]
+}
