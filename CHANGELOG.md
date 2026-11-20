@@ -6,8 +6,12 @@ verified against.
 
 ## [0.3.0] - 2026-11-21
 
-Verified against QEDCode 0.1.0, commit `50a45de` (adds `qed connect antigravity` and
-`qed connect vscode`; `check`, `solve`, `verify` and the MCP tools are unchanged since `005c8d2`).
+Verified against QEDCode 0.1.0, commits `50a45de` (adds `qed connect antigravity` and
+`qed connect vscode`) and `7edcca1` (`qed verify` uses the project's detected Python).
+
+### Tested
+- Antigravity (`agy` 1.5.13): 4 of 4 bug-zoo projects reached grade A, VERIFIED, with hidden tests
+  passing, through `tests/run_ide_smoke.py` with prompts that don't name QEDCode.
 
 ### Added
 - Google Antigravity and VS Code: skill install folders, `qed connect antigravity` / `vscode`, and
@@ -15,7 +19,9 @@ Verified against QEDCode 0.1.0, commit `50a45de` (adds `qed connect antigravity`
 - `tests/check_contract.py`: runs the real `qed check` and `qed verify` on a bug zoo project and
   fails if a grade, exit code or JSON field the skill documents has changed. No model needed.
 - `tests/run_ide_smoke.py`: an agent test inside Antigravity (`agy -p`), with the skill and MCP
-  server set up per workspace, then `qed verify` and the hidden tests on the agent's result.
+  server set up per workspace and a one-run permission allow-list, then `qed verify` and the
+  hidden tests on the agent's result.
+- Troubleshooting: NOT VERIFIED from a QEDCode `uv tool` install before `7edcca1`.
 - CI workflow `sync-with-qedcode`: validation, contract test and packaging against QEDCode's
   main branch on every push, pull request and every Monday.
 

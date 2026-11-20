@@ -88,7 +88,10 @@ def main() -> int:
         if receipt:
             ver = run([*qed, "verify", receipt], proj, timeout=900)
             if ver.returncode != 0 or "VERIFIED" not in ver.stdout:
-                problems.append(f"verify: expected VERIFIED, exit 0; got {ver.returncode}")
+                problems.append(
+                    f"verify: expected VERIFIED, exit 0; got {ver.returncode}: "
+                    f"{(ver.stdout + ver.stderr).strip()[-600:]}"
+                )
 
         # 3: wrong fix (the bug stays, the new test still fails)
         reset(proj)

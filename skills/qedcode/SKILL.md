@@ -20,7 +20,8 @@ re-runs. This skill only teaches you to use it. It contains no copy of the engin
 
 Verified against QEDCode **0.1.0**: the release commit `8824706`, the fix commit `005c8d2`
 (which makes `check` stricter about weakened tests and adds `notes` to MCP `check`), and
-`50a45de` (which adds `qed connect antigravity` and `vscode`). All report 0.1.0. The advice
+`50a45de` (which adds `qed connect antigravity` and `vscode`), and `7edcca1` (which makes
+`qed verify` use the project's Python). All report 0.1.0. The advice
 below is correct on all of them. Where they differ, it says so. If
 `qed --version` reports a newer version, read `qed --help` and trust it over this file.
 

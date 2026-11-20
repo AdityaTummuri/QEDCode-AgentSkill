@@ -46,6 +46,21 @@ from run_solve_smoke import prepare, run, venv_python  # noqa: E402
 
 SKILL = Path(__file__).resolve().parent.parent / "skills" / "qedcode"
 PROOF = "Fix it, and make sure the fix is actually proven before you tell me it is done."
+# agy's headless mode denies every tool that needs a permission it cannot ask for. These rules are
+# passed with --settings for this run only (never saved): QEDCode's MCP tools, `qed`, the
+# project's own Python, and read-only git and file commands. Nothing else may run.
+ALLOW = [
+    *(f"mcp(qedcode/{tool})" for tool in ("check", "verify", "status", "solve")),
+    "command(qed)",
+    "command(command -v qed)",
+    "command(.venv/bin/python)",
+    "command(git status)",
+    "command(git diff)",
+    "command(git log)",
+    "command(ls)",
+    "command(cat)",
+    "command(grep)",
+]
 
 
 @dataclass
@@ -93,13 +108,19 @@ def smoke_one(src: Path, work: Path, out: Path, args: argparse.Namespace, qed: l
     if args.name_qedcode:
         prompt += " Use QEDCode (the qedcode MCP tools) for the proof."
     cmd = ["agy", "-p", prompt, "--print-timeout", f"{args.timeout}s"]
-    cmd += ["--dangerously-skip-permissions"] if args.skip_permissions else ["--mode", "auto"]
+    if args.skip_permissions:
+        cmd.append("--dangerously-skip-permissions")
+    else:
+        cmd += ["--settings", json.dumps({"permissions": {"allow": ALLOW}})]
     if args.model:
         cmd += ["--model", args.model]
     env = {k: v for k, v in os.environ.items() if k != "VIRTUAL_ENV"}
     start = time.monotonic()
     try:
-        done = run(cmd, proj, timeout=args.timeout + 120, env=env)
+        done = subprocess.run(  # no stdin: agy must never wait for a typed answer
+            cmd, cwd=proj, capture_output=True, text=True, timeout=args.timeout + 120, env=env,
+            stdin=subprocess.DEVNULL, check=False,
+        )
     except subprocess.TimeoutExpired:
         row.agent, row.note = "timeout", f"agy ran over {args.timeout + 120}s"
         return row
@@ -162,7 +183,7 @@ def main() -> int:
     parser.add_argument(
         "--skip-permissions",
         action="store_true",
-        help="pass --dangerously-skip-permissions to agy (default: --mode auto)",
+        help="pass --dangerously-skip-permissions to agy (default: a narrow allow-list)",
     )
     parser.add_argument("--out", type=Path, help="folder for transcripts and the report")
     parser.add_argument("--keep", action="store_true", help="keep the temporary projects")

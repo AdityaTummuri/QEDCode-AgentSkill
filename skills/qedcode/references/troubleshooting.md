@@ -16,6 +16,7 @@
 | `status: "busy"` / `Another QEDCode task is already running` | One job per project | Wait, or poll `status` with the given `job_id`. A stale lock is taken over automatically once its process has gone |
 | MCP `solve` returns `running` and the agent times out | Solves take minutes | Poll `status(job_id)`. The user can raise `MCP_TOOL_TIMEOUT` |
 | `qed verify` → `NOT VERIFIED` | Code, base commit or tests changed since the receipt was written | Report the listed mismatches. Don't edit the receipt |
+| `qed verify` → NOT VERIFIED with "pytest is not installed in .../qedcode/bin/python" right after `check` gave A | QEDCode builds before `7edcca1` re-ran tests with QEDCode's own Python when the project was never confirmed in the `qed` UI | Not a code problem. The user upgrades QEDCode (`uv tool upgrade qedcode`), or runs `qed` once in the project to confirm its Python; then verify again |
 | `qed verify` → `not safe to run here` | The receipt asks for a command other than this project's test command | Only re-run receipts QEDCode wrote in this project |
 | `apply`/`undo` → refused | A file it would touch changed since the snapshot | Tell the user. Don't force it. Re-run `solve` on the current code if needed |
 | `Something went wrong inside QEDCode` (exit 3) | Internal error | Report it; details are in `~/.qedcode/logs/qedcode.log`. Suggest `qed doctor` |

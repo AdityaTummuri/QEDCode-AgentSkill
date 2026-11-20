@@ -119,7 +119,7 @@ and [examples/regression-fix.md](skills/qedcode/examples/regression-fix.md).
 | --- | --- |
 | Claude Code 2.1.329, CLI | Works: tested end to end with `qed check` / `qed verify`, and without QEDCode installed |
 | Claude Code 2.1.329, QEDCode MCP | Works: tested end to end with `mcp__qedcode__check` / `verify` |
-| Antigravity (`agy` 1.5.10) | MCP registration tested for real (`qed connect antigravity`, `agy mcp list`); the agent run with `tests/run_ide_smoke.py` is still to do |
+| Antigravity (`agy` 1.5.13) | Works: 4 of 4 bug-zoo projects reached grade A, VERIFIED, with hidden tests passing, from prompts that don't mention QEDCode |
 | VS Code | Not tested (no VS Code on the test machine); install paths taken from the VS Code docs |
 | Agensi, OpenCode, Cline, Cursor | Not tested |
 
