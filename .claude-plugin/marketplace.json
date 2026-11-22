@@ -8,7 +8,7 @@
     {
       "name": "qedcode",
       "description": "Teaches coding agents to use QEDCode (the qed CLI and MCP server): grade changes A to D with qed check, generate verified fixes with qed solve, re-run proof receipts with qed verify, and report results honestly.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "source": "./",
       "skills": ["./skills/qedcode"],
       "author": {

@@ -23,7 +23,9 @@ Is a model ready? (`qed doctor`: engine build + model file ok, or cloud set)
    QEDCode `8824706`, appending a test to an existing test file counts as a protected change and
    caps the grade at B (seen in testing). From `005c8d2` on, appending new `test_*` functions
    without touching the old ones is fine, and only the new tests count as proof.
-3. Run `qed check --json`. Parse stdout as JSON. Progress lines go to stderr.
+3. Run `qed check --json`. Parse stdout as JSON. Progress lines go to stderr. While you are still
+   fixing things, `qed check --speed fast --json` answers in seconds (grade at most B); run the
+   final check at the default speed.
 4. Read `status`, `grade`, `summary`, `failing_tests`, `notes`.
    - `rejected`: the summary names the stage (`Rejected at parse`, `Rejected at fbpa`, ...) and
      `failing_tests` lists failures. Fix the code and check again.

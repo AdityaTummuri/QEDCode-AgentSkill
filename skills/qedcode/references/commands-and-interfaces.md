@@ -31,6 +31,14 @@ qed check [--speed fast|normal|sure] [--base <ref>] [--json] [--allow-risky]
   | `task_id`, `base`, `message`, `notes` | `notes` names the Python interpreter that was used, and why tests could not run |
 
 - Exit codes: **0** graded (any grade), **1** rejected or cancelled, **2** no changes, busy or error.
+- Speed: `fast` skips the full suite (seconds, but the grade is at most B, and the receipt says
+  "Full suite not run (fast speed)"). `normal` (default) and `sure` also run the full suite before
+  and after the change, given at most 120 s / 300 s. A suite that doesn't finish in time is marked
+  too slow, the related test files run instead (60 s each; slower files are left out and named in
+  the receipt), and the best grade is B. From `5953682` on the project remembers a too-slow suite
+  (`.qed/full_suite_too_slow.json`), so later checks skip the wait; before it, `check` waited the
+  project's whole test timeout (300 s by default). Use `fast` while iterating and the default for
+  the final grade.
 - `--allow-risky` lets code that uses subprocess, network, `eval` and similar pass the risk stage.
   Use it only when the user approved that code.
 

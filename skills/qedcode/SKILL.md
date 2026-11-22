@@ -20,8 +20,8 @@ re-runs. This skill only teaches you to use it. It contains no copy of the engin
 
 Verified against QEDCode **0.1.0** at these commits: `8824706` (release), `005c8d2` (`check`
 is stricter about weakened tests; MCP `check` returns `notes`), `50a45de` (`qed connect
-antigravity` and `vscode`) and `7edcca1` (`qed verify` uses the project's Python). All report
-0.1.0. The advice
+antigravity` and `vscode`), `7edcca1` (`qed verify` uses the project's Python) and `5953682`
+(`check` no longer waits 300 s for a big repository's full suite). All report 0.1.0. The advice
 below is correct on all of them. Where they differ, it says so. If
 `qed --version` reports a newer version, read `qed --help` and trust it over this file.
 
@@ -58,6 +58,10 @@ you just wrote before you tell the user it is done.
 4. **Run QEDCode.** See [references/commands-and-interfaces.md](references/commands-and-interfaces.md)
    for exact flags, JSON fields and exit codes.
    - Grade: `qed check --json` (progress goes to stderr, one JSON object to stdout).
+   - **Iterating? Use `--speed fast`** (MCP: `speed="fast"`): it skips the full suite, so it
+     answers in seconds even on a big repository, but its grade is at most B. Run one last
+     `qed check` at the default speed for the grade you report. On sympy one check took 6 s at
+     fast and 126 s at normal (306 s before `5953682`).
    - Generate: `qed solve "<plain-words task>" --json`. It takes minutes. Do not pass `--apply`,
      `--allow-risky` or `--yes` unless the user asked for that.
    - Over MCP: always pass `project_dir` as the absolute repository root. If `solve` returns

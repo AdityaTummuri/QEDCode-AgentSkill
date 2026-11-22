@@ -4,6 +4,18 @@ All notable changes to the QEDCode Agent Skill. The format follows
 [Keep a Changelog](https://keepachangelog.com/). Each entry names the QEDCode version it was
 verified against.
 
+## [0.3.1] - 2026-11-22
+
+Verified against QEDCode 0.1.0, commit `5953682` (`check` gives a big repository's full suite at
+most 120 s / 300 s and remembers a too-slow suite).
+
+### Changed
+- Iterate with `qed check --speed fast` (MCP `speed="fast"`), then run one final check at the
+  default speed for the grade you report. Found by Benchy's agent mode: Antigravity with QEDCode
+  hit its 15-minute limit on a sympy task while `qed check` waited for the full suite. Measured on
+  that task: 306 s per check before `5953682`, 126 s at normal after it, 6 s at fast (same grade B).
+- The command reference explains what each `check` speed runs and why `fast` caps the grade at B.
+
 ## [0.3.0] - 2026-11-21
 
 Verified against QEDCode 0.1.0, commits `50a45de` (adds `qed connect antigravity` and
