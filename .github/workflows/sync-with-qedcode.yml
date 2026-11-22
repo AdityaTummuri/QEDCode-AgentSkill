@@ -36,3 +36,11 @@ jobs:
         run: python3 tests/check_contract.py --zoo ../QEDCode/bugzoo --qed qed
       - name: Package builds
         run: scripts/package.sh
+      - name: Upload release ZIP
+        if: matrix.os == 'ubuntu-latest' && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: qedcode-agent-skill-v0.3.1
+          path: dist/qedcode-skill-*.zip
+          if-no-files-found: error
+          retention-days: 30
