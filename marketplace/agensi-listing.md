@@ -18,6 +18,8 @@ checklist.
 
 **Title:** QEDCode: proven fixes for coding agents
 
+**Icon / image:** `assets/mark.svg` (square QEDCode mark; export a PNG if the dashboard needs one)
+
 **Price:** Free
 
 **Tags:** testing, verification, debugging, bug-fix, python, javascript, typescript, mcp,
